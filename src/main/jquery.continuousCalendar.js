@@ -10,8 +10,8 @@ define(function(require) {
   require('jquery.tinyscrollbar')
 
   $.continuousCalendar = {
-    version : typeof VERSION != 'undefined' ? VERSION : 'nightly',
-    released: typeof RELEASED != 'undefined' ? RELEASED : 'nightly'
+    version : typeof VERSION !== 'undefined' ? VERSION : 'nightly',
+    released: typeof RELEASED !== 'undefined' ? RELEASED : 'nightly'
   }
   $.fn.continuousCalendar = function(options) {
     return this.each(function() { _continuousCalendar.call($(this), options) })
@@ -33,13 +33,17 @@ define(function(require) {
         fadeOutDuration: 0,
         callback       : $.noop,
         customScroll   : false,
-        theme          : ''
+        scrollOptions  : {
+          sizethumb: 'auto'
+        },
+        theme          : '',
+        allowClearDates: false
       }
       var params = $.extend({}, defaults, options)
       var locale = DateLocale.fromArgument(params.locale)
       var startDate = fieldDate(params.startField)
       var endDate = fieldDate(params.endField)
-      var today = DateTime.now()
+      var today = DateTime.today()
 
       if(params.selectToday) {
         var formattedToday = formatDate(today)
@@ -78,23 +82,25 @@ define(function(require) {
         dateBehavior.performTrigger()
       }
 
-      function initScrollBar() { if(params.customScroll) customScrollContainer = $('.tinyscrollbar', container).tinyscrollbar() }
+      function initScrollBar() { if(params.customScroll) customScrollContainer = $('.tinyscrollbar', container).tinyscrollbar(params.scrollOptions) }
 
       function initCalendarTable() {
-        if(calendarBody.scrollContent) return
+        if (!calendarBody.scrollContent) {
 
-        calendarBody = $.extend(calendarBody, CalendarBody(calendarContainer, calendarRange, locale,
-          params.customScroll, params.disableWeekends, disabledDatesObject))
-        bindScrollEvent()
+          calendarBody = $.extend(calendarBody, CalendarBody(calendarContainer, calendarRange, locale,
+              params.customScroll, params.disableWeekends, disabledDatesObject))
+          bindScrollEvent()
 
-        popupBehavior.initState()
-        dateBehavior.addRangeLengthLabel()
-        dateBehavior.initEvents()
-        scrollToSelection()
+          popupBehavior.initState()
+          dateBehavior.addRangeLengthLabel()
+          dateBehavior.addDateClearingLabel()
+          dateBehavior.initEvents()
+          scrollToSelection()
+        }
       }
 
       function determineRangeToRenderFormParams(params) {
-        var firstWeekdayOfGivenDate = (startDate || DateTime.now()).getFirstDateOfWeek(locale)
+        var firstWeekdayOfGivenDate = (startDate || DateTime.today()).getFirstDateOfWeek(locale)
         var rangeStart = dateOrWeek(params.firstDate, -params.weeksBefore * 7)
         var rangeEnd = dateOrWeek(params.lastDate, params.weeksAfter * 7 + 6)
 
@@ -110,12 +116,13 @@ define(function(require) {
         } else {
           var waiting = false
           calendarBody.scrollContent.scroll(function() {
-            if(waiting) return
-            setTimeout(function() {
-              waiting = false
-              setYearLabel()
-            }, 250)
-            waiting = true
+            if (!waiting) {
+              setTimeout(function() {
+                waiting = false
+                setYearLabel()
+              }, 250)
+              waiting = true
+            }
           })
         }
       }
@@ -251,5 +258,5 @@ define(function(require) {
   }
   $.fn.calendarRange = function() { return $(this).data('calendarRange') }
   $.fn.exists = function() { return this.length > 0 }
-  $.fn.isEmpty = function() { return this.length == 0 }
+  $.fn.isEmpty = function() { return this.length === 0 }
 })

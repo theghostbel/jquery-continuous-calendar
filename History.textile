@@ -2,6 +2,30 @@ h3. Nightly
 
 -
 
+
+h3. 4.4.1
+
+* Fix declensions for russian localization
+
+h3. 4.4.0
+
+* Add possibility to use fixed height scroll when using custom scrollbar
+* Update russian translations for clear date labels
+
+h3. 4.3.0
+
+* Add the option of allowing clearing of dates on both range and single date calendars
+
+h3. 4.2.2
+
+* Add DateTime.today() to show current date with midnight time
+* Improve code quality
+
+h3. 4.2.1
+
+* Update latvian translations
+* Fix off by one bug when calculating last date to be shown
+
 h3. 4.2.0
 
 * Fix issue #57 by replacing setInterval with setTimeout for scroll throttling
