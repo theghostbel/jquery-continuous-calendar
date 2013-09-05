@@ -23,12 +23,13 @@ define(function(require) {
 
   function radioChoice(l) { return '<label class="row"><input type="radio" name="locale" value="' + l + '" id="' + l + '" /><span class="label">DateLocale.' + l + '</span></label>' }
 
-  var disabledDates = $([DateTime.now(), DateTime.now(), DateTime.now()])
+  var now = DateTime.today()
+  var disabledDates = $([now, now, now])
     .map(function(i, el) { return DateFormat.format(el.plusDays(i + 3), 'n/j/Y') })
     .toArray()
     .join(' ')
   $('#disabledDates').val(disabledDates)
-  var selection = $([DateTime.now().plusDays(10), DateTime.now().plusDays(18)])
+  var selection = $([now.plusDays(10), now.plusDays(18)])
     .map(function(i, el) { return DateFormat.format(el, 'n/j/Y') })
     .toArray()
   $('#selectionStart').val(selection[0])
@@ -44,10 +45,10 @@ define(function(require) {
       container.append('<input type="hidden" class="startDate" value="' + $('#selectionStart').val() + '" /><input type="hidden" class="endDate" value="' + $('#selectionEnd').val() + '"/>')
     }
     $('body').append(containerWrapper)
-    var optionsList = [ 'selectToday', 'disableWeekends', 'isPopup', 'weeksBefore', 'weeksAfter', 'firstDate', 'lastDate', 'minimumRange', 'selectWeek', 'disabledDates', 'fadeOutDuration', 'customScroll' ]
+    var optionsList = [ 'selectToday', 'disableWeekends', 'isPopup', 'weeksBefore', 'weeksAfter', 'firstDate', 'lastDate', 'minimumRange', 'selectWeek', 'disabledDates', 'fadeOutDuration', 'customScroll', 'allowClearDates' ]
     var options = {
       theme : $('[name=theme]:checked').val(),
-      locale: DateLocale[$('[name=locale]:checked').val()]
+      locale: $('[name=locale]:checked').val()
     }
 
     for(var i = 0; i < optionsList.length; i++) {
